@@ -1,17 +1,20 @@
-# go-template
+# godogx
 
-[![Build Status](https://github.com/bool64/go-template/workflows/test-unit/badge.svg)](https://github.com/bool64/go-template/actions?query=branch%3Amaster+workflow%3Atest-unit)
-[![Coverage Status](https://codecov.io/gh/bool64/go-template/branch/master/graph/badge.svg)](https://codecov.io/gh/bool64/go-template)
-[![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/github.com/bool64/go-template)
-[![Time Tracker](https://wakatime.com/badge/github/bool64/go-template.svg)](https://wakatime.com/badge/github/bool64/go-template)
-![Code lines](https://sloc.xyz/github/bool64/go-template/?category=code)
-![Comments](https://sloc.xyz/github/bool64/go-template/?category=comments)
+[![Build Status](https://github.com/bool64/godogx/workflows/test-unit/badge.svg)](https://github.com/bool64/godogx/actions?query=branch%3Amaster+workflow%3Atest-unit)
+[![Coverage Status](https://codecov.io/gh/bool64/godogx/branch/master/graph/badge.svg)](https://codecov.io/gh/bool64/godogx)
+[![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/github.com/bool64/godogx)
+[![Time Tracker](https://wakatime.com/badge/github/bool64/godogx.svg)](https://wakatime.com/badge/github/bool64/godogx)
+![Code lines](https://sloc.xyz/github/bool64/godogx/?category=code)
+![Comments](https://sloc.xyz/github/bool64/godogx/?category=comments)
 
-<!--- TODO Update README.md -->
+A library of [`godog`](https://github.com/cucumber/godog) tools and extensions.
 
-Project template with GitHub actions for Go.
+## Pretty Failed Formatter
 
-## Usage
+When running a bit test suite, where most of the scenarios pass, the output becomes less helpful if you try to check the
+failing scenarios.
 
-Create a new repository from this template, check out it and run `./run_me.sh` to replace template name with name of
-your repository.
+`pretty-failed` formatter extends `pretty` formatter, but discards output of successful scenarios and also does not show
+skipped steps after the failure was encountered.
+
+You can enable it by calling `godogx.RegisterPrettyFailedFormatter()`.
