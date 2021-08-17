@@ -1,7 +1,9 @@
 package allure
 
+// Executor describes execution context.
 type Executor struct {
-	Name       string `json:"name,omitempty" example:"Jenkins"`
+	Name string `json:"name,omitempty" example:"Jenkins"`
+	// Type may be one of [github, gitlab, teamcity, bamboo, jenkins] or a custom one.
 	Type       string `json:"type,omitempty" example:"jenkins"`
 	URL        string `json:"url,omitempty" example:"url"`
 	BuildOrder int    `json:"buildOrder,omitempty" example:"13"`

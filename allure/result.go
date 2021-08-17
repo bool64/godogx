@@ -7,18 +7,23 @@ import (
 	"github.com/google/uuid"
 )
 
-type Suite struct {
-	Name      string      `json:"name"`
-	Start     TimestampMs `json:"start"`
-	Stop      TimestampMs `json:"stop"`
-	Version   string      `json:"version"`
-	TestCases []TestCase  `json:"testCases,omitempty"`
-	Labels    []Label     `json:"labels,omitempty"`
+// Container lists all results.
+type Container struct {
+	UUID     string      `json:"uuid,omitempty"`
+	Name     string      `json:"name"`
+	Children []string    `json:"children"`
+	Start    TimestampMs `json:"start,omitempty"`
+	Stop     TimestampMs `json:"stop,omitempty"`
 }
 
-// TestCase is the top level report object for a test.
-type TestCase struct {
+// Result is the top level report object for a test.
+//
+// 18 known properties: "start", "descriptionHtml", "parameters", "name", "historyId",
+// "statusDetails", "status", "links", "fullName", "uuid", "description", "testCaseId",
+// "stage", "labels", "stop", "steps", "rerunOf", "attachments".
+type Result struct {
 	UUID          string         `json:"uuid,omitempty"`
+	HistoryID     string         `json:"historyId,omitempty"`
 	Name          string         `json:"name,omitempty"`
 	Description   string         `json:"description,omitempty"`
 	Status        Status         `json:"status,omitempty"`
@@ -35,6 +40,7 @@ type TestCase struct {
 	Links         []Link         `json:"links,omitempty"`
 }
 
+// Available statuses.
 const (
 	Broken  = Status("broken")
 	Passed  = Status("passed")
@@ -43,24 +49,30 @@ const (
 	Unknown = Status("unknown")
 )
 
+// TimestampMs is a timestamp in milliseconds.
 type TimestampMs int64
 
+// LinkType is a type of link.
 type LinkType string
 
+// Types of links.
 const (
 	Issue  LinkType = "issue"
 	TMS    LinkType = "tms"
 	Custom LinkType = "custom"
 )
 
+// Link references additional resources.
 type Link struct {
 	Name string   `json:"name,omitempty"`
 	Type LinkType `json:"type,omitempty"`
 	URL  string   `json:"url,omitempty"`
 }
 
+// Status describes test result.
 type Status string
 
+// StatusDetails provides additional information on status.
 type StatusDetails struct {
 	Known   bool   `json:"known,omitempty"`
 	Muted   bool   `json:"muted,omitempty"`
@@ -69,6 +81,7 @@ type StatusDetails struct {
 	Trace   string `json:"trace,omitempty"`
 }
 
+// Step is a part of scenario result.
 type Step struct {
 	Name          string         `json:"name,omitempty"`
 	Status        Status         `json:"status,omitempty"`
@@ -81,41 +94,54 @@ type Step struct {
 	Stop          TimestampMs    `json:"stop"`
 }
 
+// Attachment can be attached.
 type Attachment struct {
 	Name   string `json:"name"`
 	Source string `json:"source"`
 	Type   string `json:"type"`
-	Size   int    `json:"size"`
 }
 
+// NewAttachment creates and stores attachment.
 func NewAttachment(name string, mimeType string, resultsPath string, content []byte) (*Attachment, error) {
-	a := &Attachment{
-		Name: name,
-		Type: mimeType,
-	}
+	var ext string
 
-	id := uuid.New().String()
-
-	ext := ".txt"
-	if mimeType == "application/json" {
+	switch mimeType {
+	case "application/json":
 		ext = ".json"
-	} else if mimeType == "image/png" {
+	case "image/png":
 		ext = ".png"
+	case "image/jpeg":
+		ext = ".jpg"
+	case "image/gif":
+		ext = ".gif"
+	case csvMime:
+		ext = ".csv"
+	case "application/xml":
+		ext = ".xml"
+	default:
+		ext = ".txt"
 	}
-	a.Source = fmt.Sprintf("%s-Attachment%s", id, ext)
-	err := ioutil.WriteFile(fmt.Sprintf("%s/%s", resultsPath, a.Source), content, 0o600)
-	if err != nil {
+
+	a := Attachment{
+		Name:   name,
+		Type:   mimeType,
+		Source: fmt.Sprintf("%s-attachment%s", uuid.New().String(), ext),
+	}
+
+	if err := ioutil.WriteFile(fmt.Sprintf("%s/%s", resultsPath, a.Source), content, 0o600); err != nil {
 		return nil, err
 	}
 
-	return a, nil
+	return &a, nil
 }
 
+// Parameter is a named value.
 type Parameter struct {
 	Name  string `json:"name,omitempty"`
 	Value string `json:"value,omitempty"`
 }
 
+// Label is a named value.
 type Label struct {
 	Name  string `json:"name,omitempty"`
 	Value string `json:"value,omitempty"`

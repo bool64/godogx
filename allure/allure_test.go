@@ -11,7 +11,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	allure.RegisterAllureFormatter("./allure-results")
+	allure.RegisterFormatter()
 
 	out := bytes.NewBuffer(nil)
 
@@ -31,5 +31,3 @@ func TestRegister(t *testing.T) {
 	st := suite.Run()
 	assert.Equal(t, 1, st) // Failed.
 }
-
-// rm -rf ./allure-results/* && cp -r ./allure-report/history ./allure-results/history  && make integration-test; allure generate --clean
