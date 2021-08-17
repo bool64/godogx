@@ -53,7 +53,7 @@ func (p *prettyFailedFormatter) Pickle(scenario *godog.Scenario) {
 	p.PrettyFmt.Pickle(scenario)
 }
 
-func (p *prettyFailedFormatter) Feature(f *godog.Feature, ps string, c []byte) {
+func (p *prettyFailedFormatter) Feature(f *godog.GherkinDocument, ps string, c []byte) {
 	p.Lock.Lock()
 	p.buf.Reset()
 	p.Lock.Unlock()
